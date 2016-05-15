@@ -22,7 +22,7 @@ pollutantmean <- function(directory, pollutant, id=1:332){
           # Build the file name from the directory and ID 
           # The file names are three characters left padded with zeros
           filename <- paste( c(directory,"/",stri_pad_left(id[[index]],width=3,pad="0"),".csv"),collapse="" )
-          
+
           # read the file into a data frame
           df <- read.csv(filename,header=TRUE)
           
