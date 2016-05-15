@@ -1,23 +1,21 @@
-pollutantmean <- function(directory, pollutant, id=1:332){
+complete <- function(directory, id=1:332){
      require(stringi)
      #
      # directory - char vector of length 1 indicating the location of the CSV files
-     # 
-     # pollutant - "sulfate" or "nitrate"
-     # char vector of length 1 indicating the name of the polluant
-     # for which we will calculate the mean; 
      # 
      # 'id' - int vector indicating the monitor ID numbers to be Used.
      # Defaults to 1:332
      # 
      # Returns:
-     #      The mean of the pollutant across all monitors in the 'id' vector
-     #      (ignoring NA values)
-
+     #      A data frame with two columns
+     #         id: the monitor ID (which is also the file name)
+     #         nobs: the count of complete records
+ 
      # Initialize the data frame that will hold our combined data
-     combined <- data.frame(Date=character(),sulfate=numeric(),nitrate=numeric(),ID=integer())
+     completeobs <- data.frame(id=integer(),nobs=integer())
 
-     # Loop through each file and add its records to the 'combined' data frame      
+     # Loop through each file, load it into a data frame, 
+     # get the number of complete records, and add the info to the combined data frame      
      for(index in seq_along(id)){
           # Build the file name from the directory and ID 
           # The file names are three characters left padded with zeros
@@ -26,13 +24,13 @@ pollutantmean <- function(directory, pollutant, id=1:332){
           # read the file into a data frame
           df <- read.csv(filename,header=TRUE)
           
+          # get the number of compelte records
+          obscount <- sum(complete.cases(df) == TRUE)
+          
           # Add the file's data frame to our combined data frame
-          combined <- rbind(combined,df)
+          completeobs <- rbind(completeobs, data.frame(id=id[[index]],nobs=obscount))
      }
      
-     # Now get the !NA values of the pollutant
-     pollutantGoodVals <- combined[!is.na(combined[pollutant]),pollutant]
-     
-     # And finally return the mean
-     mean(pollutantGoodVals)
+     # return the combined data frame
+     completeobs
 }
